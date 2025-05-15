@@ -14,15 +14,15 @@ import (
 )
 
 type options struct {
-	policyRef string
+	targetRef string
 }
 
 func (o *options) AddFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVar(
-		&o.policyRef,
-		"policy-ref",
-		policy.PolicyStagingRef,
-		"policy reference to inspect",
+		&o.targetRef,
+		"target-ref",
+		"policy",
+		"specify which policy ref should be inspected",
 	)
 }
 
@@ -32,7 +32,7 @@ func (o *options) Run(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	state, err := policy.LoadCurrentState(cmd.Context(), repo.GetGitRepository(), o.policyRef, policyopts.BypassRSL())
+	state, err := policy.LoadCurrentState(cmd.Context(), repo.GetGitRepository(), o.targetRef, policyopts.BypassRSL())
 	if err != nil {
 		return err
 	}
@@ -55,8 +55,8 @@ func New() *cobra.Command {
 	o := &options{}
 	cmd := &cobra.Command{
 		Use:               "inspect-root",
-		Short:             "Inspect root metadata",
-		Long:              "This command displays the root metadata in a human-readable format. By default, it inspects the policy-staging ref, but you can specify a different policy ref using --policy-ref.",
+		Short:             "Print root metadata in JSON format",
+		Long:              "This command prints the root metadata in a pretty-printed JSON format. By default, it inspects the policy ref, but you can specify a different policy ref using --target-ref.",
 		RunE:              o.Run,
 		DisableAutoGenTag: true,
 	}
